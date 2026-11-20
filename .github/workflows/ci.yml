@@ -1,0 +1,19 @@
+name: Luau Syntax Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lune
+        uses: jpb/setup-lune@v1
+        with:
+          version: "0.10.5"
+      - name: Run Syntax Verification
+        run: lune run tests/syntax_check.luau

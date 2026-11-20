@@ -2,6 +2,7 @@
 -- FluentStudio: Modern Windows 11 Fluent UI Library built natively for Roblox Studio
 -- Inspired by dawid-scripts/Fluent, rewritten from scratch for PlayerGui, Strict Luau, Mobile & Gamepad.
 
+local UserInputService = game:GetService("UserInputService")
 local Window = require(script.Components.Window)
 local Themes = require(script.Themes)
 local Icons = require(script.Icons)
@@ -55,6 +56,10 @@ end
 
 function FluentStudio.RegisterIcon(name: string, assetId: string)
 	Icons.Register(name, assetId)
+end
+
+function FluentStudio.IsMobile(): boolean
+	return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled
 end
 
 function FluentStudio.DestroyAll()

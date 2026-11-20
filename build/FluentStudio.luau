@@ -1034,6 +1034,10 @@ type ConfigData = Types.ConfigData
 
 local Window = {}
 
+local function detectMobile(): boolean
+	return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled
+end
+
 function Window.new(options: WindowOptions)
 	local janitor = Janitor.new()
 	local localPlayer = Players.LocalPlayer
@@ -1047,12 +1051,18 @@ function Window.new(options: WindowOptions)
 	local config = ConfigManager.new()
 	janitor:Add(config)
 
+	local isMobile = detectMobile()
 	local minSize = options.MinSize or Vector2.new(440, 320)
 	local tabWidth = options.TabWidth or 165
 	local minimizeKey = options.MinimizeKey or Enum.KeyCode.RightControl
 	local resizable = if options.Resizable == nil then true else options.Resizable
 	local showSearch = if options.SearchBar == nil then true else options.SearchBar
-	local showMobileToggle = if options.MobileToggleButton == nil then true else options.MobileToggleButton
+	local showMobileToggle: boolean
+	if options.MobileToggleButton == nil or options.MobileToggleButton == "Auto" then
+		showMobileToggle = isMobile
+	else
+		showMobileToggle = options.MobileToggleButton == true
+	end
 
 	local screenGui = Creator.Create("ScreenGui", {
 		Name = "FluentStudio_" .. (options.Title or "Window"),
@@ -1593,6 +1603,7 @@ function Window.new(options: WindowOptions)
 		MainFrame = mainFrame,
 		Config = config,
 		Sound = sound,
+		IsMobile = isMobile,
 		AddTab = function(_, tabOpts: TabOptions)
 			local tabObj = Tab.new(tabList, pagesHolder, themeReg, sound, config, tabOpts, selectTab)
 			table.insert(tabs, tabObj)
@@ -4700,7 +4711,7 @@ export type WindowOptions = {
 	Resizable: boolean?,
 	SearchBar: boolean?,
 	SoundEnabled: boolean?,
-	MobileToggleButton: boolean?,
+	MobileToggleButton: ("Auto" | boolean)?,
 	Parent: Instance?,
 }
 
@@ -4866,6 +4877,7 @@ __MODULES["init"] = function(script, require)
 -- FluentStudio: Modern Windows 11 Fluent UI Library built natively for Roblox Studio
 -- Inspired by dawid-scripts/Fluent, rewritten from scratch for PlayerGui, Strict Luau, Mobile & Gamepad.
 
+local UserInputService = game:GetService("UserInputService")
 local Window = require(script.Components.Window)
 local Themes = require(script.Themes)
 local Icons = require(script.Icons)
@@ -4919,6 +4931,10 @@ end
 
 function FluentStudio.RegisterIcon(name: string, assetId: string)
 	Icons.Register(name, assetId)
+end
+
+function FluentStudio.IsMobile(): boolean
+	return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled
 end
 
 function FluentStudio.DestroyAll()

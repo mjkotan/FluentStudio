@@ -40,7 +40,7 @@ export type WindowOptions = {
 	Resizable: boolean?,
 	SearchBar: boolean?,
 	SoundEnabled: boolean?,
-	MobileToggleButton: boolean?,
+	MobileToggleButton: ("Auto" | boolean)?,
 	Parent: Instance?,
 }
 
